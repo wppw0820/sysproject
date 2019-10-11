@@ -1,0 +1,48 @@
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+
+}
+
+ .el-form-item__label {
+  color: rgb(30, 130, 160) !important;
+}
+
+div,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,
+li,
+p,
+table{
+  box-sizing: border-box;
+}
+/* .el-message.el-message--error{
+  background-color: rgb(255, 72, 0);
+} */
+/* Home.vue 侧边栏二级菜单 */
+/* .el-submenu .el-menu-item{
+  padding-left: 50px !important;
+} */
+
+/* -------------------Users.vue中需要修改的样式----------------- */
+.el-breadcrumb__separator {
+  /* 面包屑导航箭头颜色 */
+  color: #333 ;
+}
+/* form表单中输入验证成功给出的成功样式 */
+.el-form-item.is-success .el-input__inner, .el-form-item.is-success .el-input__inner:focus, .el-form-item.is-success .el-textarea__inner, .el-form-item.is-success .el-textarea__inner:focus{
+  border-color: rgb(20, 131, 20);
+}
+.el-form-item.is-success .el-input__validateIcon{
+  color:rgb(26, 141, 26);
+  font-weight: 700;
+}
