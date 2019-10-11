@@ -142,8 +142,8 @@ export default {
 			proType: ['java', 'python', 'js', 'php', 'vs']
 		}
 	},
-	methods: {
-		// 点击创建项目按钮打开创建对话框
+	methods:{
+		// 点击创建项目按钮打kai创建对话框
 		createPro() {
 			this.dialogVisible = true
 		},
