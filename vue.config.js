@@ -20,7 +20,13 @@ module.exports = {
   configureWebpack: {
     plugins: [
       // 忽略 moment.js的locale 文件
-      new webpack.IgnorePlugin(/^\.\/locales$/, /moment$/)
+      new webpack.IgnorePlugin(/^\.\/locales$/, /moment$/),
+      new webpack.ProvidePlugin({
+        $:"jquery",
+        jQuery:"jquery",
+        "windows.jQuery":"jquery"
+    })
+
     ]
   },
   chainWebpack: (config) => {

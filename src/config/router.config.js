@@ -25,6 +25,12 @@ const constantRouterMap = [
         name: 'list',
         meta: { title: '项目列表' },
         component: () => import('@/views/List')
+      },
+      {
+        path: '/details',
+        name:'details',
+        meta: { title: '项目详情' },
+        component: () => import('@/views/Details')
       }
     ]
   },
