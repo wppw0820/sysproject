@@ -37,7 +37,7 @@
         <!-- 底部按钮组 -->
         <el-form-item class="btns">
           <el-button type="primary" @click="valid">登录</el-button>
-          <el-button type="success" @click="resetLoginForm">重置</el-button>
+          <!-- <el-button type="success" @click="resetLoginForm">重置</el-button> -->
         </el-form-item>
       </el-form>
     </div>
@@ -73,16 +73,25 @@ export default {
     
   },
   methods: {
-    resetLoginForm() {
-      this.$refs.loginFormRef.resetFields()
-    },
+    // resetLoginForm() {
+    //   this.$refs.loginFormRef.resetFields()
+    // },
     valid() {
       this.$refs.loginFormRef.validate( valid => {
         if (!valid) {
           this.$message.error('请完善表单信息')
         }else{
           // 发送请求验证用户名和密码是否正确
-          getLogin(this.loginForm).then((res) => {
+         let form = this.$refs.loginFormRef.$el
+        //  console.log(form);
+         let formData = new FormData()
+         let password = this.$md5(this.loginForm.password+'+'+this.loginForm.username).toUpperCase()
+        //  console.log(password)
+         formData.append('username',this.loginForm.username)
+         formData.append('password',password)
+        //  console.log(formData.get('password')); 
+          // return
+          getLogin(formData).then((res) => {
             console.log(res);
             if(res.code == -6){
               return this.$message.success('用户名或者密码不正确') 
@@ -152,5 +161,8 @@ export default {
 .btns {
   display: flex;
   justify-content: flex-end;
+  .el-button{
+    width: 350px;
+  }
 }
 </style>

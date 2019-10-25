@@ -39,10 +39,15 @@ const constantRouterMap = [
   //   name: '404',
   //   component: () => import('@/components/Exception')
   // },
-  // {
-  //   path: '*',
-  //   redirect: '/404'
-  // }
+  {
+    path: '*',
+    redirect: '/404',
+  },
+  {
+    path: '/404',
+    name: '404',
+    component:()=>import('@/components/Exception')
+  }
 ]
 // 导出路由配置模块
 export default constantRouterMap

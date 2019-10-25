@@ -22,10 +22,10 @@ module.exports = {
       // 忽略 moment.js的locale 文件
       new webpack.IgnorePlugin(/^\.\/locales$/, /moment$/),
       new webpack.ProvidePlugin({
-        $:"jquery",
-        jQuery:"jquery",
-        "windows.jQuery":"jquery"
-    })
+        $: "jquery",
+        jQuery: "jquery",
+        "windows.jQuery": "jquery"
+      })
 
     ]
   },
@@ -71,21 +71,25 @@ module.exports = {
         javascriptEnabled: true
       },
       // 设置自适应
-      // postcss: {
-      //   plugins: [
-      //     require('postcss-px2rem')({
-      //       remUnit: 192
-      //     })
-      //   ]
-      // }
+      postcss: {
+        plugins: [
+          require('postcss-px2rem')({
+            remUnit: 192
+          })
+        ]
+      }
     }
   },
   devServer: {
-    // development server port 8000
+    // development server port 8000 这开发环境服务器配置也可以充当代理的角色
+    // http请求时在本地的静态服务器找对应的资源能找到就返回 如果映射不到 直接发送代理之后的远程服务器 去请求 
     port: 8000,
+    host: 'localhost',
+    // open:true, //自动打开浏览器
+    // hot:true, // 自动刷新
     proxy: {
       '/': {
-        target: 'http://11.0.0.150:6086',
+        target: 'http://11.0.0.150:9060',
         ws: false,
         changeOrigin: true
       }

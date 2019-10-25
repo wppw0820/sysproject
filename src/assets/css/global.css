@@ -4,13 +4,37 @@ body,
   margin: 0;
   padding: 0;
   height: 100%;
-
 }
-
+body{
+  font-size: 16px !important;
+}
+/*设置npgress样式（自定义结构） */
+/* .bar{
+  background-color: #fff !important;
+}
+.peg{
+  box-shadow: 0 0 10px #fff!important;
+}
+.spinner-icon{
+  border-top-color:white!important;
+  border-left-color: white!important;
+} */
+#nprogress .bar{
+  /* background-color: rgb(19, 141, 197) !important; */
+  height: 2px !important;
+  position: absolute !important;
+  z-index: 999 !important;
+  left: 0!important;
+  top: 0px!important;
+  width: 100%!important;
+}
  .el-form-item__label {
   color: rgb(30, 130, 160) !important;
 }
-
+/* .el-aside,
+.el-main{
+  overflow-x:initial !important;
+} */
 div,
 form,
 h1,
@@ -46,3 +70,34 @@ table{
   color:rgb(26, 141, 26);
   font-weight: 700;
 }
+/* .el-table__body{
+  border-collapse: collapse !important;
+} */
+/* .el-table__header{
+  border-collapse: collapse !important;
+} */
+/* .el-table td{
+  border-right: 1px solid #EBEEF5 !important;
+}
+.el-table td:nth-of-type(1){
+  border-left: 1px solid #EBEEF5 !important;
+}
+.el-table th{
+  border-right: 1px solid #EBEEF5 !important;
+  border-top: 1px solid #EBEEF5 !important;
+}
+.el-table th:nth-of-type(1){
+  border-left: 1px solid #EBEEF5 !important;
+}
+.el-table::before{
+  height: 0 !important;
+} */
+
+/* .el-table--border::after, .el-table--group::after{
+  width: 0 !important;
+} */
+
+/* .el-table--border{
+  border:none !important;
+  border-top: 1px solid #EBEEF5 !important;
+} */

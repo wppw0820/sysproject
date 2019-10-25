@@ -57,6 +57,7 @@ export default {
 }
 .el-main {
   background-color: #E1E6F6;
+  padding: 4px 10px 10px;
 }
 .logout {
   position: absolute;
