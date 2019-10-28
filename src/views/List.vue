@@ -1,12 +1,9 @@
 <template>
   <div class="table-box">
     <!-- 卡片视图 -->
-    <el-card class="box-card" v-loading="loading" 
-      element-loading-text="拼命加载中" 
-      element-loading-spinner="el-icon-loading" 
-      element-loading-background="rgba(0, 0, 0, 0.5)">
+    <el-card class="box-card" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.5)">
       <!-- 标题 -->
-      <h3 class="pro_list">项目列表</h3>
+      <h3 class="pro_list"></h3>
       <!-- 表格数据操作 -->
       <el-row>
         <el-col :span="16">
@@ -28,8 +25,7 @@
         </el-col>
       </el-row>
       <!-- 数据列表 -->
-      <el-table :data="tablePageData" style="width:100%;margin-top:10px;" max-height="600" border 
-      >
+      <el-table :data="tablePageData" style="width:100%;margin-top:10px;" max-height="600" border>
         <el-table-column prop="srcPath" label="项目包名" align="center" width="260px" sortable></el-table-column>
         <el-table-column prop="ltype" label="项目类型" align="center" sortable></el-table-column>
         <el-table-column prop="scannedFiles" label="扫描文件数" align="center" width="120px" sortable></el-table-column>
@@ -52,7 +48,7 @@
       <el-dialog title="创建项目" :visible.sync="dialogVisible" width="30%" @close="closeDialog" center>
         <!-- 上传文件 -->
         <el-upload ref="upload" class="upload-demo" action="" :auto-upload="false" :on-change="handleChange" :before-upload="beforeUpload" multiple :limit="3" accept=".zip" :show-file-list="false" :on-success="uploadSuccess">
-          <el-tooltip class="item" effect="dark" placement="top">
+          <el-tooltip class="item" effect="light" placement="top">
             <div slot="content" style="line-height:18px">只能上传.zip格式<br />且不超过100M</div>
             <el-button size="small" type="primary">上传项目源码</el-button>
           </el-tooltip>
@@ -60,22 +56,24 @@
         <el-input v-model="fileName" class="fileName" readonly></el-input>
         <!-- 表单 -->
         <el-form :model="createProject" ref="addFormRef" label-position="right" label-width="120px">
-          <el-form-item label="项目类型" prop="ltype" required>
+          <el-form-item label="项目类型" required>
             <el-select placeholder="请选择项目类型" clearable v-model="createProject.ltype" @change="select">
               <el-option :key="index" v-for="(item,index) in proType" :value="item"></el-option>
             </el-select>
           </el-form-item>
 
-          <el-form-item :label="typeVersionName" v-show="flag1" required>
+          <el-form-item :label="typeVersionName" v-show="flag1" required >
             <el-select placeholder="请选择项目版本" clearable v-model="version" @change="select">
               <el-option :key="index" v-for="(item,index) in typeVersion" :value="item"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="typePathName" v-show="flag2" required>
-            <el-input v-model="typePath"></el-input>
-          </el-form-item>
+          <el-tooltip :content="msg" placement="bottom" effect="light">
+            <el-form-item :label="typePathName" v-show="flag2" :required="isMust">
+              <el-input v-model="typePath"></el-input>
+            </el-form-item>
+          </el-tooltip>
         </el-form>
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer" class="dialog-footer" >
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="submitForm">创建项目</el-button>
         </span>
@@ -119,6 +117,8 @@ export default {
 			fileName: '',
 			flag1: false,
 			flag2: false,
+      isMust: false,
+      msg:'aa',
 			// 定义项目类型的版本名字
 			typeVersionName: '',
 
@@ -142,6 +142,7 @@ export default {
 			getLists().then(res => {
 				if (res.code !== 0) return this.$message.error('获取数据失败')
 				this.tableData = res.data
+				// console.log(res.data[0].detail == undefined);
 				const obj = {
 					detail: '',
 					endTime: '',
@@ -156,7 +157,7 @@ export default {
 				}
 				this.tableData.forEach(item => {
 					for (let k in obj) {
-						if (!item[k]) {
+						if (item[k] == undefined) {
 							item[k] = ''
 						}
 					}
@@ -262,12 +263,15 @@ export default {
 		},
 		// 上传文件的change事件
 		handleChange(file, fileList) {
+      this.createProject.file = {}
+      this.fileName = ''	
 			if (!file) return this.$message.error('上传文件错误')
-			this.createProject.file = file.raw
-			this.fileName = file.raw.name
-			const size = file.raw.size / 1024 / 1024 <= 100 // 原始单位是字节 转变厚变成M
-			if (!size) this.$message.error('上传文件不能超过100M')
-			return size
+      const size = file.raw.size / 1024 / 1024 <= 100 // 原始单位是字节 转变厚变成M  
+      const isZip = file.raw.type =='application/x-zip-compressed'
+      if (!isZip) return this.$message.error('只能上传.zip格式!')
+      if (!size) return this.$message.error('上传文件不能超过100M')
+      this.createProject.file = file.raw
+      this.fileName = file.raw.name	
 		},
 		// 上传之前的处理事件
 		beforeUpload(file) {},
@@ -276,7 +280,7 @@ export default {
 		// 点击创建按钮创建项目
 		submitForm() {
 			if (this.flag1 && this.flag2) {
-				if (!this.createProject.ltype || !this.fileName || !this.version || !this.typePath) {
+				if (!this.createProject.ltype || !this.fileName || !this.version) {
 					return this.$message.warning('请完善表单信息')
 				}
 			} else if (!this.flag1 && this.flag2) {
@@ -309,16 +313,16 @@ export default {
 			let extraInfo = JSON.stringify(this.createProject.extraInfo)
 			formData.append('file', this.createProject.file)
 			formData.append('ltype', this.createProject.ltype)
-      formData.append('extraInfo', extraInfo)
-      // 发送请求之前设置开启loading效果 成功之后关闭loading
-      let load = Loading.service({
-        text:'正在上传中',
-        background:'rgba(0, 0, 0, 0.8)',
-        target:'.el-dialog',
-      })
+			formData.append('extraInfo', extraInfo)
+			// 发送请求之前设置开启loading效果 成功之后关闭loading
+			let load = Loading.service({
+				text: '正在上传中',
+				background: 'rgba(0, 0, 0, 0.8)',
+				target: '.el-dialog'
+			})
 			createPro(formData).then(res => {
-        if (res.code != 0) return this.$message.error('上传失败')
         load.close()
+				if (res.code != 0) return this.$message.error('上传失败')	
 				if (res.code == 0) this.$message.success('上传成功')
 				this.dialogVisible = false
 				this.getAllPro()
@@ -331,32 +335,38 @@ export default {
 				this.typeVersionName = 'JDK版本'
 				this.typeVersion = ['1.5', '1.6', '1.7', '1.8', '1.9']
 				this.typePathName = 'classpath'
+				this.version = '1.8'
+        this.isMust = false
+        this.msg = './lib/A.jar:./lib/B.jar'
 				this.flag1 = true
 				this.flag2 = true
 			}
 			if (type == 'Python') {
 				this.typeVersionName = 'Python版本'
 				this.typeVersion = ['2.0', '3.0']
-				this.typePathName = 'python库路径'
+				this.typePathName = 'Python库路径'
+				this.version = '2.0'
+        this.isMust = false
+        this.msg = './lib/libA:./lib/libB'
 				this.flag1 = true
 				this.flag2 = true
 			}
 			if (type == 'JavaScript') {
 				this.typeVersionName = 'js版本'
 				this.typeVersion = ['1', '2', '3', '4', '5', '6', '7', '8']
-				this.typePathName = 'js库路径'
 				this.flag1 = false
 				this.flag2 = false
 			}
 			if (type == 'PHP') {
 				this.typeVersionName = 'php版本'
 				this.typeVersion = ['5.3', '5.4', '5.5', '5.6', '7.0', '7.1']
-				this.typePathName = 'php库路径'
+				this.version = '7.0'
 				this.flag1 = true
-				this.flag2 = true
+				this.flag2 = false
 			}
 			if (type == 'Visual Studio') {
 				this.typePathName = '解决方案文件'
+				this.isMust = true
 				this.flag1 = false
 				this.flag2 = true
 			}
@@ -367,7 +377,7 @@ export default {
 		},
 		// 删除项目
 		async handleDel(index, row) {
-			let res = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+			let res = await this.$confirm('确定删除项目?', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				type: 'warning'
@@ -397,9 +407,9 @@ export default {
 			this.$router.push({
 				name: 'details',
 				query: {
-          id: row.id,
-          srcPath: row.srcPath,
-          ltype:row.ltype
+					id: row.id,
+					srcPath: row.srcPath,
+					ltype: row.ltype
 				}
 			})
 		}
@@ -427,11 +437,11 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-/deep/.el-icon-loading{
-  font-size: 24px !important;
+/deep/.el-icon-loading {
+	font-size: 24px !important;
 }
-/deep/.el-loading-text{
-  font-size: 14px !important;
+/deep/.el-loading-text {
+	font-size: 14px !important;
 }
 .table-box {
 	width: 100%;
@@ -473,6 +483,9 @@ export default {
 	.el-form-item__content .el-input {
 		width: 89%;
 	}
+}
+/deep/.el-form-item__error {
+	left: 24px !important;
 }
 .pagination {
 	margin-top: 20px;

@@ -36,21 +36,21 @@
         <!-- 问题列表 -->
         <div class="issues_box">
           <h4>问题列表</h4>
+          <p>
+            <span>视图：</span>
+            <el-select v-model="viewType" placeholder="请选择" @change="handleChange">
+              <el-option label="快速视图" value="快速视图"></el-option>
+              <el-option label="安全审计视图" value="安全审计视图"></el-option>
+            </el-select>
+          </p>
           <div class="list">
-            <p>
-              <span>视图：</span>
-              <el-select v-model="viewType" placeholder="请选择" @change="handleChange">
-                <el-option label="快速视图" value="快速视图"></el-option>
-                <el-option label="安全审计视图" value="安全审计视图"></el-option>
-              </el-select>
-            </p>
             <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
               <el-tab-pane :name="item.name" :key="index" v-for="(item,index) in issueStat">
                 <div slot="label" class="tab_box">
                   <span :class="item.className"></span>
-                  {{item.issueCount}}
+                  {{item.level}}（{{item.issueCount}}）
                 </div>
-                <p :class="item.className">{{item.level}}（{{item.issueCount}}）</p>
+                <!-- <p :class="item.className">{{item.level}}（{{item.issueCount}}）</p> -->
                 <div class="scroll_box">
                   <el-scrollbar style="height:100%">
                     <!-- 树形结构 -->
@@ -74,7 +74,7 @@
           <h4>分析证据</h4>
           <div class="multiple_path">
             <i class="el-icon-arrow-left left" @click="sub"></i>
-            <span>问题路径：{{`${num1} / ${num2 || 1}`}}</span>
+            <span>{{`${num1} / ${num2 || 1}`}}</span>
             <i class="el-icon-arrow-right right" @click="add"></i>
           </div>
           <div class="evident">
@@ -197,7 +197,7 @@ export default {
 					}
 				]
 			},
-			code: 'const a = 10\nlet b = 2',
+			code: '',
 			cmOptions: {
 				// codemirror options
 				tabSize: 4,
@@ -280,11 +280,11 @@ export default {
 			// 项目问题统计数组
 			issueArr: [],
 			// 问题描述
-      description: '',
+			description: ''
 		}
 	},
 	created() {
-    // console.log(this.$route)
+		// console.log(this.$route)
 		this.$store.commit('setMark', true)
 		this.queryInfo.projectId = this.$route.query.id
 		this.projectId = this.$route.query.id
@@ -368,8 +368,8 @@ export default {
 		},
 		// tab切换事件
 		handleClick(tab, e) {
-      this.analysis = []
-      this.description = ''
+			this.analysis = []
+			this.description = ''
 			this.showFlag = false
 			switch (tab.name) {
 				case 'first':
@@ -415,8 +415,8 @@ export default {
 		},
 		// 关闭当前树节点事件
 		closeNode() {
-      this.analysis = []
-      this.description = ''
+			this.analysis = []
+			this.description = ''
 			this.showFlag = false
 		},
 		// 根据id查询问题路径
@@ -499,7 +499,9 @@ export default {
 			background-color: #fff;
 			h4 {
 				margin: 0;
-				padding: 10px 10px 0;
+        padding: 10px 10px 0;
+        text-align: left;
+        padding-left: 30px;
 				// border-bottom: 1px solid #ccc;
 			}
 			.grid-content {
@@ -509,7 +511,7 @@ export default {
 				text-align: left;
 				margin: 0;
 				margin-left: 30px;
-				font-size: 16px;
+				font-size: 14px;
 				margin-top: 8px;
 				span {
 					margin-right: 10px;
@@ -520,36 +522,39 @@ export default {
 			}
 		}
 		.issues_box {
-			text-align: center;
+			// text-align: center;
 			// padding-bottom: 16px;
 			// border-bottom: 1px solid #ccc;
 			background-color: #fff;
 			margin-top: 2px;
 			h4 {
 				margin: 0;
-				padding: 12px 12px 4px;
+        padding: 12px 12px 4px;
+        margin-left: 18px;
+				display: inline-block;
 				// border-bottom: 1px solid #ccc;
 			}
-			.list {
-				p {
-					text-align: left;
-					margin: 0;
-					margin-left: 90px;
-					font-size: 14px;
-					margin-top: 8px;
-					margin-bottom: 12px;
-					.el-select {
-						/deep/.el-input__inner {
-							height: 30px !important;
-						}
-						/deep/.el-input__icon {
-							line-height: 30px !important;
-						}
+			p {
+				display: inline-block;
+				text-align: left;
+				margin: 0;
+				margin-left: 190px;
+				font-size: 14px;
+				margin-top: 8px;
+				margin-bottom: 12px;
+				.el-select {
+					/deep/.el-input__inner {
+						height: 30px !important;
 					}
-					span {
-						margin-right: 20px;
+					/deep/.el-input__icon {
+						line-height: 30px !important;
 					}
 				}
+				span {
+					margin-right: 4px;
+				}
+			}
+			.list {
 				/deep/.el-tabs {
 					.el-tabs__header {
 						margin-bottom: 8px !important;
@@ -559,7 +564,8 @@ export default {
 					}
 					.el-tabs__content {
 						padding-top: 0;
-						padding-bottom: 10px !important;
+            padding-bottom: 10px !important;
+            padding-left: 12px!important;
 					}
 					.el-tabs__item.is-active {
 						color: #409eff;
@@ -600,7 +606,7 @@ export default {
 						.scroll_box {
 							// border-top: 1px solid #ccc;
 							padding-top: 8px;
-							height: 272px;
+							height: 388px;
 							.el-scrollbar__wrap {
 								overflow-x: hidden;
 							}
@@ -636,7 +642,7 @@ export default {
 			}
 		}
 		.analysis {
-			text-align: center;
+			// text-align: center;
 			padding-bottom: 10px;
 			// border-bottom: 1px solid #ccc;
 			background-color: #fff;
@@ -645,12 +651,16 @@ export default {
 			h4 {
 				margin: 0;
 				padding: 12px;
-				padding-bottom: 4px;
+        padding-bottom: 4px;
+        margin-left: 18px;
+				display: inline-block;
 				// border-bottom: 1px solid #ccc;
 			}
 			.multiple_path {
 				margin-top: 4px;
-				margin-bottom: 6px;
+        margin-bottom: 6px;
+        display: inline-block;
+        margin-left: 320px;
 				.left,
 				.right {
 					font-weight: 700;
@@ -659,14 +669,15 @@ export default {
 					width: 30px;
 				}
 				span {
-					margin: 0 16px;
+          margin: 0 16px;
+          margin-right: 22px;
 				}
 			}
 			.evident {
 				.scroll_box {
 					border-top: 1px solid #ccc;
 					padding-top: 8px;
-					height: 228px;
+					height: 240px;
 					/deep/.el-scrollbar__wrap {
 						overflow-x: hidden !important;
 					}
@@ -682,21 +693,21 @@ export default {
 		padding-left: 10px;
 		.code {
 			background-color: #fff;
-      height: 760px;
-      /deep/.CodeMirror-activeline-background{
-        background-color: #C6D87C;
-      }
+			height: 760px;
+			/deep/.CodeMirror-activeline-background {
+				background-color: #c6d87c;
+			}
 		}
 		/deep/.description {
 			margin-top: 8px;
 			background-color: #fff;
-      padding: 12px;
-      height: 94px;
-      .empty{
-        text-align: center;
-        color: #909399;
-        margin-top: 18px;
-      }
+			padding: 12px;
+			height: 108px;
+			.empty {
+				text-align: center;
+				color: #909399;
+				margin-top: 18px;
+			}
 			h5 {
 				margin: 0;
 				margin-bottom: 6px;
@@ -704,8 +715,8 @@ export default {
 				border-bottom: 1px solid #ccc;
 			}
 			p {
-        margin: 0;
-        word-break: break-word;
+				margin: 0;
+				word-break: break-word;
 				/deep/code {
 					color: blue !important;
 				}

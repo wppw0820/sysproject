@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container" @keydown.enter="valid" tabindex='1'>
     <div class="title">
         <span>源码漏洞扫描系统</span>
       </div>
@@ -94,10 +94,10 @@ export default {
           getLogin(formData).then((res) => {
             console.log(res);
             if(res.code == -6){
-              return this.$message.success('用户名或者密码不正确') 
+              return this.$message.error('用户名或密码错误') 
             }
             if(res.code == 0){
-               this.$message.success('登陆成功')
+               this.$message.success('登录成功')
                window.sessionStorage.setItem('isLogin', 'true')
                this.$router.push('/home')
             }
