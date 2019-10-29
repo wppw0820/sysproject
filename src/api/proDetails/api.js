@@ -14,7 +14,6 @@ export function getList(parameter){
   return axios({
     url:api.getLists+`/${parameter}`,
     method:'get',
-    params:parameter
   })
 }
 export function getAllIssue(parameter){
@@ -28,7 +27,6 @@ export function getIssue(parameter){
   return axios({
     url:api.getIssue + `/${parameter}`,
     method:'get',
-    params:parameter
   })
 }
 export function getIssuePath(parameter){

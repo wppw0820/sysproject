@@ -1,7 +1,7 @@
 <template>
   <div class="table-box">
     <!-- 卡片视图 -->
-    <el-card class="box-card" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.5)">
+    <el-card class="box-card" v-loading="loading" element-loading-text="数据加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.5)">
       <!-- 标题 -->
       <h3 class="pro_list"></h3>
       <!-- 表格数据操作 -->
@@ -25,7 +25,7 @@
         </el-col>
       </el-row>
       <!-- 数据列表 -->
-      <el-table :data="tablePageData" style="width:100%;margin-top:10px;" max-height="600" border>
+      <el-table :data="tablePageData" style="width:100%;margin-top:10px;" border>
         <el-table-column prop="srcPath" label="项目包名" align="center" width="260px" sortable></el-table-column>
         <el-table-column prop="ltype" label="项目类型" align="center" sortable></el-table-column>
         <el-table-column prop="scannedFiles" label="扫描文件数" align="center" width="120px" sortable></el-table-column>
@@ -62,8 +62,8 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item :label="typeVersionName" v-show="flag1" required >
-            <el-select placeholder="请选择项目版本" clearable v-model="version" @change="select">
+          <el-form-item :label="typeVersionName" v-show="flag1" required>
+            <el-select placeholder="请选择项目版本" clearable v-model="version">
               <el-option :key="index" v-for="(item,index) in typeVersion" :value="item"></el-option>
             </el-select>
           </el-form-item>
@@ -73,7 +73,7 @@
             </el-form-item>
           </el-tooltip>
         </el-form>
-        <span slot="footer" class="dialog-footer" >
+        <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="submitForm">创建项目</el-button>
         </span>
@@ -117,8 +117,8 @@ export default {
 			fileName: '',
 			flag1: false,
 			flag2: false,
-      isMust: false,
-      msg:'aa',
+			isMust: false,
+			msg: 'aa',
 			// 定义项目类型的版本名字
 			typeVersionName: '',
 
@@ -164,41 +164,33 @@ export default {
 				})
 				console.log(this.tableData)
 				this.total = res.data.length
-				this.getPageData()
+				this.getPageData(this.tableData)
 			})
 		},
 		// 定义展示的分页数据方法
-		getPageData() {
+		getPageData(data) {
 			let pagenum = this.queryPro.pagenum
 			let pagesize = this.queryPro.pagesize
 			let total = this.total
 			let startIndex = (pagenum - 1) * pagesize
 			let endIndex = startIndex + pagesize
 			setTimeout(() => {
-				this.tablePageData = this.tableData.slice(startIndex, endIndex)
+				this.tablePageData = data.slice(startIndex, endIndex)
 				this.$nextTick(function() {
 					this.loading = false
 				})
 			}, 500)
 		},
-		getPageData1() {
-			let pagenum = this.queryPro.pagenum
-			let pagesize = this.queryPro.pagesize
-			let total = this.total
-			let startIndex = (pagenum - 1) * pagesize
-			let endIndex = startIndex + pagesize
-			this.tablePageData = this.tableSearchData.slice(startIndex, endIndex)
-		},
 		// 页面尺寸发生变化时的处理函数
 		handleSizeChange(pagesize) {
 			// console.log(pagesize);
 			this.queryPro.pagesize = pagesize
-			this.getPageData()
+			this.search()
 		},
 		// 当前页发生变化时的处理函数
 		handleCurrentChange(pagenum) {
 			this.queryPro.pagenum = pagenum
-			this.getPageData()
+			this.search()			
 		},
 		// 点击搜索
 		search() {
@@ -229,22 +221,22 @@ export default {
 						arr.push(item)
 					}
 				})
-				this.tableSearchData = arr
-				if (this.tablePageData.length == 0) return this.$message.error('查询不到对应数据')
-				this.getPageData1()
+				// if (this.tableSearchData.length == 0)  this.$message.error('查询不到对应数据')
+				this.getPageData(arr)
 			} else {
-				const arr = []
+        const arr = []
+        const objStatus = { 0: '等待处理', 1: '扫描中', 2: '解析中', 3: '处理失败', 4: '处理成功' }
 				this.tableData.forEach(item => {
+          item.status = objStatus[item.status] || item.status
 					for (let k in item) {
-						if (item[k] == searchData || ('' + item[k]).includes(searchData)) {
+						if (('' + item[k]).includes(searchData)) {
 							arr.push(item)
 							break
 						}
 					}
 				})
-				this.tableSearchData = arr
-				if (this.tablePageData.length == 0) return this.$message.error('查询不到对应数据')
-				this.getPageData1()
+				// if (this.tableSearchData.length == 0)  this.$message.error('查询不到对应数据')
+				this.getPageData(arr)
 			}
 		},
 		// 点击创建项目按钮打kai创建对话框
@@ -263,15 +255,15 @@ export default {
 		},
 		// 上传文件的change事件
 		handleChange(file, fileList) {
-      this.createProject.file = {}
-      this.fileName = ''	
+			this.createProject.file = {}
+			this.fileName = ''
 			if (!file) return this.$message.error('上传文件错误')
-      const size = file.raw.size / 1024 / 1024 <= 100 // 原始单位是字节 转变厚变成M  
-      const isZip = file.raw.type =='application/x-zip-compressed'
-      if (!isZip) return this.$message.error('只能上传.zip格式!')
-      if (!size) return this.$message.error('上传文件不能超过100M')
-      this.createProject.file = file.raw
-      this.fileName = file.raw.name	
+			const size = file.raw.size / 1024 / 1024 <= 100 // 原始单位是字节 转变厚变成M
+			const isZip = file.raw.type == 'application/x-zip-compressed'
+			if (!isZip) return this.$message.error('只能上传.zip格式!')
+			if (!size) return this.$message.error('上传文件不能超过100M')
+			this.createProject.file = file.raw
+			this.fileName = file.raw.name
 		},
 		// 上传之前的处理事件
 		beforeUpload(file) {},
@@ -321,8 +313,8 @@ export default {
 				target: '.el-dialog'
 			})
 			createPro(formData).then(res => {
-        load.close()
-				if (res.code != 0) return this.$message.error('上传失败')	
+				load.close()
+				if (res.code != 0) return this.$message.error(res.msg)
 				if (res.code == 0) this.$message.success('上传成功')
 				this.dialogVisible = false
 				this.getAllPro()
@@ -336,18 +328,18 @@ export default {
 				this.typeVersion = ['1.5', '1.6', '1.7', '1.8', '1.9']
 				this.typePathName = 'classpath'
 				this.version = '1.8'
-        this.isMust = false
-        this.msg = './lib/A.jar:./lib/B.jar'
+				this.isMust = false
+				this.msg = './lib/A.jar:./lib/B.jar'
 				this.flag1 = true
 				this.flag2 = true
 			}
 			if (type == 'Python') {
 				this.typeVersionName = 'Python版本'
-				this.typeVersion = ['2.0', '3.0']
+				this.typeVersion = ['2', '3']
 				this.typePathName = 'Python库路径'
-				this.version = '2.0'
-        this.isMust = false
-        this.msg = './lib/libA:./lib/libB'
+				this.version = '3'
+				this.isMust = false
+				this.msg = './lib/libA:./lib/libB'
 				this.flag1 = true
 				this.flag2 = true
 			}
@@ -358,7 +350,7 @@ export default {
 				this.flag2 = false
 			}
 			if (type == 'PHP') {
-				this.typeVersionName = 'php版本'
+				this.typeVersionName = 'PHP版本'
 				this.typeVersion = ['5.3', '5.4', '5.5', '5.6', '7.0', '7.1']
 				this.version = '7.0'
 				this.flag1 = true
@@ -368,7 +360,8 @@ export default {
 				this.typePathName = '解决方案文件'
 				this.isMust = true
 				this.flag1 = false
-				this.flag2 = true
+        this.flag2 = true
+        this.msg = './test.sln'
 			}
 			if (type == 'Make') {
 				this.flag1 = false
@@ -400,7 +393,7 @@ export default {
 		// 格式化状态值
 		fomatter(row, column) {
 			let objStatus = { 0: '等待处理', 1: '扫描中', 2: '解析中', 3: '处理失败', 4: '处理成功' }
-			return objStatus[row.status]
+			return objStatus[row.status] || row.status
 		},
 		// 查看详情
 		handleDetails(index, row) {
@@ -412,6 +405,13 @@ export default {
 					ltype: row.ltype
 				}
 			})
+		}
+	},
+	watch: {
+		queryInfo: function(newVal, oldVal) {
+			if (newVal == '') {
+				this.getAllPro()
+			}
 		}
 	},
 	computed: {

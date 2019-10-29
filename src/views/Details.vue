@@ -27,7 +27,7 @@
               </el-col>
               <el-col :span="10">
                 <div class="grid-content bg-purple">
-                  <p><span>项目报告：</span><span><a :href="`http://11.0.0.150:9060/tinker/project/report?projectId=${projectId}`">下载</a></span></p>
+                  <p><span>项目报告：</span><span><a :href="`/tinker/project/report?projectId=${projectId}`">下载</a></span></p>
                 </div>
               </el-col>
             </el-row>
@@ -70,7 +70,7 @@
           </div>
         </div>
         <!-- 分析证据 -->
-        <div class="analysis">
+        <div class="analysis" onselectstart="return false">
           <h4>分析证据</h4>
           <div class="multiple_path">
             <i class="el-icon-arrow-left left" @click="sub"></i>
@@ -85,9 +85,9 @@
                     <!-- <svg class="icon" aria-hidden="true">
                       <use xlink:href="#icon-wenjianjia2" v-if="data.children"></use>
                       <use xlink:href="#icon-wenjian1" v-else></use>
-                    </svg> -->
-                    <img :src="require(`../assets/images/${data.nodeType}.png`)" alt="" class="evident_icon">
-                    {{`${data.srcFileName} :${data.lineNum} - ${data.addInfo}`}}
+                    </svg> -->  
+                      <img :src="urlArr.includes(data.nodeType) ? require(`../assets/images/${data.nodeType}.png`) :''" alt="" class="evident_icon">
+                      {{data.nodeType == 'SecondaryLocation'? '宏扩展：':''}}{{data.addInfo ? `${data.srcFileName} :${data.lineNum} - ${data.addInfo}`:`${data.srcFileName} :${data.lineNum}`}}
                   </span>
                 </el-tree>
               </el-scrollbar>
@@ -108,7 +108,7 @@
         </div>
       </el-main>
       <!-- 查看项目摘要对话框 -->
-      <el-dialog title="项目摘要" :visible.sync="dialogVisible" width="50%" center @opened="callback">
+      <el-dialog title="" :visible.sync="dialogVisible" width="50%" center @opened="callback">
         <el-row :gutter="20">
           <el-col :span="12">
             <div class="grid-content bg-purple">扫描文件数：{{singlePro.scannedFiles}}</div>
@@ -156,12 +156,16 @@ import {
 import echarts from 'echarts'
 //导入lodash
 import _ from 'lodash'
+import {urlArr} from '@/utils/imgUrl.js'
 export default {
 	name: '',
 	data() {
 		return {
 			echartsData: {
-				title: { text: '问题统计' },
+				title: {
+					text: '问题统计',
+					x: '60px'
+				},
 				tooltip: {},
 				legend: {
 					data: ['问题数量'],
@@ -169,7 +173,7 @@ export default {
 					y: '0'
 				},
 				xAxis: {},
-				yAxis: { data: ['低', '中等', '高', '严重'] },
+				yAxis: { data: ['低', '中', '高', '严重'] },
 				series: [
 					{
 						name: '问题数量',
@@ -253,7 +257,7 @@ export default {
 				{
 					name: 'third',
 					issueCount: 0,
-					level: '中等',
+					level: '中',
 					className: 'medium_icon'
 				},
 				{
@@ -265,10 +269,12 @@ export default {
 			],
 			// 分析证据
 			analysisAllData: [],
-			analysis: [],
+      analysis: [],
+      // 图标路径集合
+      urlArr:urlArr,
 			// 路径参数
 			num1: 1,
-			num2: '',
+			num2: 1,
 			// 定义代码定位行号
 			lineNum: 1,
 			// 项目摘要对话框打开关闭
@@ -284,7 +290,8 @@ export default {
 		}
 	},
 	created() {
-		// console.log(this.$route)
+    // console.log(this.$route)
+    // console.log(this.urlArr);
 		this.$store.commit('setMark', true)
 		this.queryInfo.projectId = this.$route.query.id
 		this.projectId = this.$route.query.id
@@ -292,7 +299,7 @@ export default {
 		this.getAllIssue0() // 调用所有问题方法
 	},
 	mounted() {
-		// 在mounted 确保dom元素加载完毕 调用echarts
+    // 在mounted 确保dom元素加载完毕 调用echarts  
 	},
 	methods: {
 		callback() {
@@ -357,6 +364,9 @@ export default {
 		// 视图选择改变事件
 		handleChange() {
 			this.analysis = []
+			this.analysisAllData = []
+			this.num1 = 1
+			this.num2 = 1
 			this.showFlag = false
 			if (this.viewType == '快速视图') {
 				this.queryInfo.quickView = 'true'
@@ -369,6 +379,9 @@ export default {
 		// tab切换事件
 		handleClick(tab, e) {
 			this.analysis = []
+			this.analysisAllData = []
+			this.num1 = 1
+			this.num2 = 1
 			this.description = ''
 			this.showFlag = false
 			switch (tab.name) {
@@ -416,18 +429,24 @@ export default {
 		// 关闭当前树节点事件
 		closeNode() {
 			this.analysis = []
+			this.analysisAllData = []
+			this.num1 = 1
+			this.num2 = 1
 			this.description = ''
 			this.showFlag = false
 		},
 		// 根据id查询问题路径
 		getIssuePath0(id) {
+			this.num1 = 1
 			getIssuePath({ id: id }).then(res => {
 				console.log(res)
-				if (res.data) {
-					this.num2 = res.data.length
-					this.analysisAllData = res.data
-					this.analysis = this.analysisAllData[0]
+				if (res.code != 0) {
+					this.num2 = 1
+					return this.$message.error('获取证据失败')
 				}
+				this.num2 = res.data.length
+				this.analysisAllData = res.data
+				this.analysis = this.analysisAllData[0]
 			})
 		},
 		// 根据项目id和file路径查询源码
@@ -469,7 +488,7 @@ export default {
 
 <style lang='less' scoped>
 #myEchart {
-	margin-top: 20px;
+	margin: 20px auto;
 }
 .code_box {
 	height: 100%;
@@ -499,9 +518,9 @@ export default {
 			background-color: #fff;
 			h4 {
 				margin: 0;
-        padding: 10px 10px 0;
-        text-align: left;
-        padding-left: 30px;
+				padding: 10px 10px 0;
+				text-align: left;
+				padding-left: 30px;
 				// border-bottom: 1px solid #ccc;
 			}
 			.grid-content {
@@ -529,8 +548,8 @@ export default {
 			margin-top: 2px;
 			h4 {
 				margin: 0;
-        padding: 12px 12px 4px;
-        margin-left: 18px;
+				padding: 12px 12px 4px;
+				margin-left: 18px;
 				display: inline-block;
 				// border-bottom: 1px solid #ccc;
 			}
@@ -564,8 +583,8 @@ export default {
 					}
 					.el-tabs__content {
 						padding-top: 0;
-            padding-bottom: 10px !important;
-            padding-left: 12px!important;
+						padding-bottom: 10px !important;
+						padding-left: 12px !important;
 					}
 					.el-tabs__item.is-active {
 						color: #409eff;
@@ -646,21 +665,22 @@ export default {
 			padding-bottom: 10px;
 			// border-bottom: 1px solid #ccc;
 			background-color: #fff;
-			margin-top: 2px;
+      margin-top: 2px;
+      -moz-user-select: none; //禁止双击选中（火狐专用）ie和chrome可以直接在元素上写 onselectstart="return fasle"
 
 			h4 {
 				margin: 0;
 				padding: 12px;
-        padding-bottom: 4px;
-        margin-left: 18px;
+				padding-bottom: 4px;
+				margin-left: 18px;
 				display: inline-block;
 				// border-bottom: 1px solid #ccc;
 			}
 			.multiple_path {
 				margin-top: 4px;
-        margin-bottom: 6px;
-        display: inline-block;
-        margin-left: 320px;
+				margin-bottom: 6px;
+				display: inline-block;
+				margin-left: 320px;
 				.left,
 				.right {
 					font-weight: 700;
@@ -669,8 +689,8 @@ export default {
 					width: 30px;
 				}
 				span {
-          margin: 0 16px;
-          margin-right: 22px;
+					margin: 0 16px;
+					margin-right: 26px;
 				}
 			}
 			.evident {
@@ -751,6 +771,13 @@ export default {
 	}
 	/deep/.el-dialog__title {
 		font-weight: 700;
+	}
+	/deep/.el-dialog__body {
+		.el-col {
+			.grid-content {
+				margin-left: 120px;
+			}
+		}
 	}
 	.stat_view {
 		text-align: center;

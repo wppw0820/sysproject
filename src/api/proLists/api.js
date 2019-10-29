@@ -24,7 +24,6 @@ export function delPro(parameter){
   return axios({
     url:api.del + `/${parameter}`,
     method:'delete',
-    params:parameter
   })
 }
 export function createPro(parameter){

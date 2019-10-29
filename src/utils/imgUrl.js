@@ -1,0 +1,27 @@
+const urlArr = [
+  'Alias',
+  'Assign',
+  'AssignGlobal',
+  'BranchNotTaken',
+  'BranchTaken',
+  'Compare',
+  'Deref',
+  'EndScope',
+  'ExternalEntry',
+  'GENERIC',
+  'InCall',
+  'InOutCall',
+  'Jump',
+  'OutCall',
+  'Read',
+  'ReadGlobal',
+  'Ref',
+  'Return',
+  'RuntimeSink',
+  'RuntimeSource',
+  'RuntimeValidation',
+  'TaintChange'
+]
+export{
+  urlArr
+}
