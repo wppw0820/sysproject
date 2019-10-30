@@ -43,7 +43,7 @@
               <el-option label="安全审计视图" value="安全审计视图"></el-option>
             </el-select>
           </p>
-          <div class="list">
+          <div class="list"  v-loading="loading" element-loading-text="数据加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.5)">
             <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
               <el-tab-pane :name="item.name" :key="index" v-for="(item,index) in issueStat">
                 <div slot="label" class="tab_box">
@@ -286,7 +286,9 @@ export default {
 			// 项目问题统计数组
 			issueArr: [],
 			// 问题描述
-			description: ''
+      description: '',
+      // 数据加载
+      loading:false,
 		}
 	},
 	created() {
@@ -339,7 +341,9 @@ export default {
 		},
 		// 获取某个项目的所有问题
 		getAllIssue0() {
+      this.loading = true
 			getAllIssue(this.queryInfo).then(res => {
+      this.loading = false
 				if (res.code != 0) return this.$message.error('获取问题列表失败')
 				let data = res.data
 				this.dataLists = data.map(item => {

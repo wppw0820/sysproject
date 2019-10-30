@@ -9,7 +9,7 @@
         <img src="../assets/login-icon.png" alt />
       </div>
       <!-- 表单 -->
-      <el-form :model="loginForm" :rules="loginFormRules" ref="loginFormRef" label-width="80px" class="login_form">
+      <el-form :model="loginForm" :rules="loginFormRules" ref="loginFormRef" label-width="80px" class="login_form" >
         <!-- 用户名 -->
         <el-form-item label="用户名" id="lab" prop="username">
           <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="iconfont icon-user"></el-input>
@@ -144,6 +144,9 @@ export default {
   padding-right: 20px;
   /deep/.el-form-item__label{
     color: #eee!important;
+  }
+  /deep/.el-form-item__error{
+    color: rgb(228, 46, 10)!important;
   }
 }
 .btns {

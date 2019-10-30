@@ -417,7 +417,7 @@ export default {
 	computed: {
 		isPrevent1: function() {
 			return function(row) {
-				if (row.status == 4) {
+				if (row.status == 4 || row.status == '处理成功') {
 					return false
 				} else {
 					return true
@@ -426,7 +426,7 @@ export default {
 		},
 		isPrevent2: function() {
 			return function(row) {
-				if (row.status == 1 || row.status == 2) {
+				if (row.status == 1 || row.status == 2 || row.status =='扫描中' || row.status == '解析中') {
 					return true
 				} else {
 					return false
