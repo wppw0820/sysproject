@@ -1,13 +1,15 @@
 // 导入路径和webpack
 const path = require('path')
 const webpack = require('webpack')
-// 路径处理
+// 路径处理函数
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
 // vue 配置
 module.exports = {
-  // 完成开发环境和生产环境的 服务地址配置
+  // webpack会在开发阶段提供一个根目录下的静态服务器,默认编译的bundle.js在根目录 (内存中,看不到)
+  // 完成开发环境和生产环境的 服务地址配置, 在开发阶段项目运行起来时的静态服务器在根目录，通过webpack-dev-server实时编译的bundle.js是在根目录，此时index.html
+  // 引入的编译bundle.js只能通过绝对路径'/'访问，而在生产环境时,通过手动npm run build打包之后的 index.html和bundle.js在同一个dist文件中 此时应该用相对路径'./'
   publicPath: process.env.NODE_ENV === "production" ? "./" : "/",
   // 关闭生产环境下的 代码调试功能
   productionSourceMap: false,
@@ -82,14 +84,20 @@ module.exports = {
   },
   devServer: {
     // development server port 8000 这开发环境服务器配置也可以充当代理的角色
-    // http请求时在本地的静态服务器找对应的资源能找到就返回 如果映射不到 直接发送代理之后的远程服务器 去请求 
     port: 8000,
     host: 'localhost',
     // open:true, //自动打开浏览器
     // hot:true, // 自动刷新
+    // disableHostCheck:true,
     proxy: {
       '/': {
         target: 'http://11.0.0.150:9060',
+        // bypass: function(req, res, proxyOptions) {  // 跳过浏览器请求代理 （在history模式下，前后端分离项目 前台临时配置，避免请求404）
+        //   if (req.headers.accept.indexOf("html") !== -1) {
+        //     console.log("Skipping proxy for browser request.")
+        //     return "/index.html";
+        //   }
+        // },
         ws: false,
         changeOrigin: true
       }

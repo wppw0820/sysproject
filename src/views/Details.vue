@@ -43,7 +43,7 @@
               <el-option label="安全审计视图" value="安全审计视图"></el-option>
             </el-select>
           </p>
-          <div class="list"  v-loading="loading" element-loading-text="数据加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.5)">
+          <div class="list" v-loading="loading" element-loading-text="数据加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.5)">
             <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
               <el-tab-pane :name="item.name" :key="index" v-for="(item,index) in issueStat">
                 <div slot="label" class="tab_box">
@@ -85,9 +85,9 @@
                     <!-- <svg class="icon" aria-hidden="true">
                       <use xlink:href="#icon-wenjianjia2" v-if="data.children"></use>
                       <use xlink:href="#icon-wenjian1" v-else></use>
-                    </svg> -->  
-                      <img :src="urlArr.includes(data.nodeType) ? require(`../assets/images/${data.nodeType}.png`) :''" alt="" class="evident_icon">
-                      {{data.nodeType == 'SecondaryLocation'? '宏扩展：':''}}{{data.addInfo ? `${data.srcFileName} :${data.lineNum} - ${data.addInfo}`:`${data.srcFileName} :${data.lineNum}`}}
+                    </svg> -->
+                    <img :src="urlArr.includes(data.nodeType) ? require(`../assets/images/${data.nodeType}.png`) :''" alt="" class="evident_icon">
+                    {{data.nodeType == 'SecondaryLocation'? '宏扩展：':''}}{{data.addInfo ? `${data.srcFileName} :${data.lineNum} - ${data.addInfo}`:`${data.srcFileName} :${data.lineNum}`}}
                   </span>
                 </el-tree>
               </el-scrollbar>
@@ -156,7 +156,7 @@ import {
 import echarts from 'echarts'
 //导入lodash
 import _ from 'lodash'
-import {urlArr} from '@/utils/imgUrl.js'
+import { urlArr } from '@/utils/imgUrl.js'
 export default {
 	name: '',
 	data() {
@@ -269,9 +269,9 @@ export default {
 			],
 			// 分析证据
 			analysisAllData: [],
-      analysis: [],
-      // 图标路径集合
-      urlArr:urlArr,
+			analysis: [],
+			// 图标路径集合
+			urlArr: urlArr,
 			// 路径参数
 			num1: 1,
 			num2: 1,
@@ -286,14 +286,14 @@ export default {
 			// 项目问题统计数组
 			issueArr: [],
 			// 问题描述
-      description: '',
-      // 数据加载
-      loading:false,
+			description: '',
+			// 数据加载
+			loading: false
 		}
 	},
 	created() {
-    // console.log(this.$route)
-    // console.log(this.urlArr);
+		// console.log(this.$route)
+		// console.log(this.urlArr);
 		this.$store.commit('setMark', true)
 		this.queryInfo.projectId = this.$route.query.id
 		this.projectId = this.$route.query.id
@@ -301,7 +301,7 @@ export default {
 		this.getAllIssue0() // 调用所有问题方法
 	},
 	mounted() {
-    // 在mounted 确保dom元素加载完毕 调用echarts  
+		// 在mounted 确保dom元素加载完毕 调用echarts
 	},
 	methods: {
 		callback() {
@@ -341,9 +341,9 @@ export default {
 		},
 		// 获取某个项目的所有问题
 		getAllIssue0() {
-      this.loading = true
+			this.loading = true
 			getAllIssue(this.queryInfo).then(res => {
-      this.loading = false
+				this.loading = false
 				if (res.code != 0) return this.$message.error('获取问题列表失败')
 				let data = res.data
 				this.dataLists = data.map(item => {
@@ -669,8 +669,8 @@ export default {
 			padding-bottom: 10px;
 			// border-bottom: 1px solid #ccc;
 			background-color: #fff;
-      margin-top: 2px;
-      -moz-user-select: none; //禁止双击选中（火狐专用）ie和chrome可以直接在元素上写 onselectstart="return fasle"
+			margin-top: 2px;
+			-moz-user-select: none; //禁止双击选中（火狐专用）ie和chrome可以直接在元素上写 onselectstart="return fasle"
 
 			h4 {
 				margin: 0;
